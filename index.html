@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MJSダーツレンタル | 集客と売上の二刀流サポート</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- ▼▼▼ カラー設定（MJS仕様） ▼▼▼ --- */
+        :root {
+            --base-color: #011200; /* ベース：リッチブラック */
+            --main-color: #B31200; /* メイン：深紅 */
+            --point-color: #DCBC59; /* ポイント：ゴールド */
+            --text-color: #333333;
+            --light-bg: #f8f9fa;
+        }
+
+        /* --- 基本設定 --- */
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            color: var(--text-color);
+            line-height: 1.8;
+            margin: 0;
+            padding: 0;
+            background-color: #fff;
+            overflow-x: hidden; /* 横スクロール防止 */
+        }
+
+        h1, h2, h3 { margin: 0; font-weight: 700; letter-spacing: 0.05em; }
+        p { margin-bottom: 1.5em; }
+        .container { width: 90%; max-width: 1000px; margin: 0 auto; padding: 20px 0; }
+        .text-center { text-align: center; }
+        img { max-width: 100%; height: auto; }
+
+        /* --- アニメーション用クラス（スクロールで発火） --- */
+        .fade-up {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1); /* 高級感のある動き */
+        }
+        .fade-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        /* 遅延表示用 */
+        .delay-100 { transition-delay: 0.1s; }
+        .delay-200 { transition-delay: 0.2s; }
+        .delay-300 { transition-delay: 0.3s; }
+        .delay-400 { transition-delay: 0.4s; }
+        .delay-500 { transition-delay: 0.5s; }
+
+
+        /* --- ボタン（パルスアニメーション付き） --- */
+        @keyframes pulse-gold {
+            0% { box-shadow: 0 0 0 0 rgba(220, 188, 89, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(220, 188, 89, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(220, 188, 89, 0); }
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--main-color);
+            color: #fff;
+            padding: 20px 40px;
+            font-size: 1.1rem;
+            font-weight: 900;
+            border-radius: 4px;
+            text-decoration: none;
+            box-shadow: 0 4px 10px rgba(179, 18, 0, 0.3);
+            transition: all 0.3s ease;
+            text-align: center;
+            border: 1px solid var(--main-color);
+            position: relative;
+            overflow: hidden;
+        }
+        /* ボタンがキラッと光る */
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.3), transparent);
+            transform: skewX(-20deg);
+            transition: 0.5s;
+        }
+        .btn:hover::after { left: 100%; }
+        
+        .btn:hover {
+            background-color: #fff;
+            color: var(--main-color);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            opacity: 1; 
+        }
+        .btn-pulse {
+            animation: pulse-gold 2s infinite; /* 常に脈動 */
+        }
+        
+        .btn-large { width: 100%; max-width: 560px; font-size: 1.2rem; }
+        .micro-copy { display: block; font-size: 0.8rem; margin-top: 8px; font-weight: normal; opacity: 0.9; }
+
+
+        /* --- 1. ヒーローエリア --- */
+        .hero {
+            /* グラデーションのみ */
+            background: linear-gradient(135deg, var(--base-color) 0%, #0a1a0a 100%);
+            color: #fff;
+            height: 80vh; /* 画面の80%の高さ */
+            min-height: 600px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        /* ロゴのスタイル */
+        .hero-logo {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            /* サイズを小さく修正: 120pxにしました */
+            width: 120px; 
+            height: auto;
+            z-index: 10;
+        }
+
+        .hero-content {
+            text-align: center; /* 中央寄せ */
+            max-width: 800px;
+            padding: 0 20px;
+            margin-top: 40px;
+        }
+
+        /* アニメーション：ふわっと出現 */
+        .hero-anim {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: heroFadeIn 1s ease-out forwards;
+        }
+        @keyframes heroFadeIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hero-tag {
+            background-color: var(--point-color);
+            color: var(--base-color);
+            padding: 4px 15px;
+            border-radius: 50px;
+            font-weight: 900;
+            margin-bottom: 25px;
+            display: inline-block;
+            font-size: 0.85rem;
+            letter-spacing: 0.1em;
+            animation-delay: 0.2s; /* 少し遅れて出る */
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            line-height: 1.4;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.8);
+            animation-delay: 0.4s;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+            animation-delay: 0.6s;
+        }
+
+        .hero-btn-area {
+            animation-delay: 0.8s;
+        }
+
+        /* --- セクション共通 --- */
+        .section-padding { padding: 90px 0; }
+        .bg-light { background-color: var(--light-bg); }
+        
+        .section-title {
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 60px;
+            color: var(--base-color);
+            position: relative;
+        }
+        .section-title::after {
+            content: "";
+            display: block;
+            width: 80px;
+            height: 4px;
+            background-color: var(--point-color);
+            margin: 20px auto 0;
+            transition: width 0.3s;
+        }
+        /* ホバーで線が伸びる遊び心 */
+        .section-title:hover::after { width: 120px; }
+
+        /* --- 悩みリスト --- */
+        .check-box {
+            background: #fff;
+            border: 2px solid var(--point-color);
+            padding: 40px;
+            border-radius: 8px;
+            max-width: 720px;
+            margin: 0 auto;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+        }
+        .check-box:hover { transform: translateY(-5px); }
+
+        .check-item {
+            font-size: 1.1rem;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: start;
+        }
+        .check-icon {
+            color: var(--main-color);
+            font-size: 1.4rem;
+            margin-right: 15px;
+            font-weight: bold;
+        }
+
+        /* --- 解決策（カード） --- */
+        .solution-bg { background-color: var(--base-color); color: #fff; }
+        .solution-bg .section-title { color: #fff; }
+        .card-container { display: flex; gap: 30px; flex-wrap: wrap; margin-top: 20px; }
+        
+        .card {
+            background: #fff;
+            color: var(--text-color);
+            flex: 1;
+            min-width: 300px;
+            padding: 50px 30px;
+            border-radius: 8px;
+            position: relative;
+            border-bottom: 5px solid var(--point-color);
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+        /* ホバーアクション：カードが浮く */
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(220, 188, 89, 0.2); /* ゴールドの影 */
+        }
+
+        .card-label {
+            position: absolute;
+            top: -18px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--main-color);
+            color: #fff;
+            padding: 8px 25px;
+            border-radius: 50px;
+            font-weight: 900;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            white-space: nowrap;
+        }
+        .card h3 {
+            text-align: center;
+            font-size: 1.4rem;
+            margin-bottom: 25px;
+            margin-top: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+            line-height: 1.4;
+            /* 【修正点】高さを揃えるための設定 */
+            min-height: 5em; /* 左右の見出しエリアの高さを合わせる */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        .card ul { padding-left: 20px; }
+        .card li { margin-bottom: 12px; font-weight: 500; }
+        
+        /* リンクボタン風スタイル */
+        .text-link-arrow {
+            display: inline-block;
+            margin-top: 15px;
+            font-weight: bold;
+            text-decoration: none;
+            border-bottom: 1px solid var(--main-color);
+        }
+        
+        .bonus-box {
+            background: #FFFBE6;
+            border: 2px dashed var(--point-color);
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: bold;
+            color: #5d4d00;
+        }
+
+        /* --- 実績・声 --- */
+        .voice-card {
+            background: #fff;
+            padding: 35px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: flex-start;
+            gap: 25px;
+            transition: transform 0.3s;
+        }
+        .voice-card:hover { transform: scale(1.02); } /* 微妙に拡大 */
+
+        .voice-icon {
+            width: 80px;
+            height: 80px;
+            background: #eee;
+            border-radius: 50%;
+            flex-shrink: 0;
+            overflow: hidden;
+            border: 2px solid var(--point-color); /* ゴールドの枠線を追加 */
+        }
+        .voice-icon img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* --- FAQ --- */
+        .faq-item {
+            border-bottom: 1px solid #ddd;
+            padding: 25px 0;
+        }
+        .faq-q {
+            font-weight: bold;
+            color: var(--base-color);
+            display: block;
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+            cursor: pointer;
+        }
+        .faq-q::before { content: "Q."; color: var(--main-color); margin-right: 10px; font-size: 1.3rem; }
+        .faq-a { padding-left: 35px; }
+
+        /* --- クロージング --- */
+        .cta-section {
+            background: var(--base-color);
+            color: #fff;
+            text-align: center;
+            padding: 100px 0;
+            border-top: 5px solid var(--point-color);
+        }
+        
+        /* フッター */
+        footer {
+            background: #000;
+            color: #888;
+            padding: 30px;
+            text-align: center;
+            font-size: 0.8rem;
+            border-top: 1px solid #333;
+        }
+
+        /* --- スマホ対応 --- */
+        @media (max-width: 768px) {
+            .hero-logo { width: 110px; top: 20px; left: 20px; }
+            .hero h1 { font-size: 1.8rem; }
+            .btn { width: 100%; padding: 18px 0; }
+            .card-container { flex-direction: column; }
+            .voice-card { flex-direction: column; text-align: center; }
+            .voice-icon { margin: 0 auto; }
+            .faq-a { padding-left: 0; }
+            .card h3 { min-height: auto; padding-top: 10px; padding-bottom: 10px; } /* スマホでは高さを自動に戻す */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. ヒーローエリア -->
+    <header class="hero">
+        <!-- ロゴ画像 -->
+        <img src="rogo.jpg.jpg" alt="MJS" class="hero-logo hero-anim" onerror="this.src='rogo.jpg'">
+
+        <div class="container hero-content">
+            <span class="hero-tag hero-anim">飲食店オーナー・開業予定者様へ</span>
+            
+            <!-- 修正：キャッチコピー変更 -->
+            <h1 class="hero-anim">お貸しするのは、<br>マシンではなく『繁盛のノウハウ』</h1>
+            
+            <p class="hero-anim">
+                <!-- 修正：実績数を変更 -->
+                導入実績・3,000台の実績を持つMJS。<br>
+                マシン×集客アドバイスの「二刀流」で繁盛店へ。
+            </p>
+            <div class="hero-btn-area hero-anim">
+                <a href="https://mjs-co.net/contact" class="btn btn-large btn-pulse">
+                    「集客相談」付き<br>無料シミュレーションを申し込む
+                    <span class="micro-copy">※無理な売り込みは一切ありません</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- 2. お悩み共感 -->
+    <section class="section-padding">
+        <div class="container fade-up">
+            <h2 class="section-title">美味しい料理があれば<br>お客様は来ますか？</h2>
+            <div class="check-box fade-up delay-100">
+                <p class="text-center" style="margin-bottom: 30px; font-weight:bold; font-size:1.1rem;">こんな「壁」にぶつかっていませんか？</p>
+                <div class="check-item"><span class="check-icon">✔</span> 「2軒目利用」が弱く、早い時間に客足が途絶える</div>
+                <div class="check-item"><span class="check-icon">✔</span> 新規客は来るが、なかなか常連にならない</div>
+                <div class="check-item"><span class="check-icon">✔</span> スタッフとお客様の会話が弾まない</div>
+                <div class="check-item"><span class="check-icon">✔</span> 開業予定だが、集客できるか不安でたまらない</div>
+            </div>
+            <p class="text-center fade-up delay-200" style="margin-top: 40px; font-size: 1.2rem;">
+                その悩み、<strong style="color: var(--main-color); border-bottom: 2px solid var(--point-color);">「集客ノウハウ」を持つMJS</strong>にお任せください。
+            </p>
+        </div>
+    </section>
+
+    <!-- 3. 解決策（二刀流） -->
+    <section class="section-padding solution-bg">
+        <div class="container">
+            <h2 class="section-title fade-up">MJSが選ばれる理由。<br>「即効性」と「継続性」の二刀流。</h2>
+            <div class="card-container">
+                <!-- 左：狩り -->
+                <div class="card fade-up delay-100">
+                    <span class="card-label">狩りの戦略（即効性）</span>
+                    <h3>リスクゼロで、即・収益化</h3>
+                    <ul>
+                        <li><strong>初期費用0円・設置無料</strong><br>月々のレンタル料だけでスタート。</li>
+                        <li><strong>デッドスペースの収益化</strong><br>空きスペースが利益を生む席に変わります。</li>
+                        <li><strong>最短3日で設置可能</strong><br>面倒な設定はすべてプロにお任せ。</li>
+                    </ul>
+                    <div class="text-center">
+                        <a href="https://mjs-co.net/darts" target="_blank" class="text-link-arrow">取り扱いマシンを見る &gt;</a>
+                    </div>
+                </div>
+                
+                <!-- 右：農耕（修正版：アプリ紹介） -->
+                <div class="card fade-up delay-200">
+                    <span class="card-label">農耕の戦略（継続性）</span>
+                    <h3>
+                        <span style="font-size:0.8em; color:var(--main-color);">★導入特典</span><br>
+                        25年のノウハウが詰まった<br>「繁盛の右腕」
+                    </h3>
+                    <ul>
+                        <li><strong>SNS運用が変わる</strong><br>「今日、何投稿しよう？」をゼロに。AI作成の刺さる文章で、見込み客を自動集客。</li>
+                        <li><strong>スタッフが勝手に育つ</strong><br>「接客クエスト」や「魔法の言葉」で、教えなくてもスタッフが接客の楽しさに目覚めます。</li>
+                        <li><strong>繁盛ノウハウをポケットに</strong><br>迷った時の「経営ヒント30選」や「口コミ獲得QR」など、現場で使える武器を完全収録。</li>
+                    </ul>
+                    <div class="bonus-box">
+                        スマホ1台で、お店に<br>
+                        「広報部」と「教育係」を。
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. 実績・声 -->
+    <section class="section-padding bg-light">
+        <div class="container">
+            <h2 class="section-title fade-up">「アドバイスのおかげで変わった！」<br>導入店様の声</h2>
+            
+            <!-- 1. 居酒屋オーナー様 -->
+            <div class="voice-card fade-up delay-100">
+                <div class="voice-icon">
+                    <img src="owner1.jpg.jpg" alt="居酒屋オーナー様">
+                </div>
+                <div>
+                    <h4>居酒屋オーナー様</h4>
+                    <p>「場所塞ぎになると思っていたら大間違いでした。MJSさんの<strong>『デッドスペースが一番稼ぐ席になる』</strong>という提案に目からウロコ。仕掛け一つで、ただの飾りが『集客装置』に変わりました。」</p>
+                </div>
+            </div>
+
+            <!-- 2. バー開業予定だったA様 -->
+            <div class="voice-card fade-up delay-200">
+                <div class="voice-icon">
+                    <img src="owner2.jpg.jpg" alt="バー開業予定だったA様">
+                </div>
+                <div>
+                    <h4>バー開業予定だったA様</h4>
+                    <p>「ダーツレンタルの販売だと思っていたら、コンサルタントでした。『どんな客層を狙うかで機種も置き方も変わる』と教わりびっくり。おかげでオープン初日からロケットスタートが切れました。」</p>
+                </div>
+            </div>
+
+            <!-- 3. ダイニングバー店長様 -->
+            <div class="voice-card fade-up delay-300">
+                <div class="voice-icon">
+                    <img src="owner4.jpg" alt="ダイニングバー店長様">
+                </div>
+                <div>
+                    <h4>ダイニングバー店長様</h4>
+                    <p>「SNS運用が続かず悩んでいましたが、『繁盛の右腕』のおかげで投稿が楽になり、毎日更新できるように。結果、SNS経由の予約が増え、週末は予約で満席になることが増えました！集客の悩みが解消されました。」</p>
+                </div>
+            </div>
+            
+            <!-- 4. アミューズメントバー マネージャー様 -->
+            <div class="voice-card fade-up delay-400">
+                <div class="voice-icon">
+                    <img src="owner5.jpg" alt="アミューズメントバー マネージャー様">
+                </div>
+                <div>
+                    <h4>アミューズメントバー マネージャー様</h4>
+                    <p>「アプリ内の接客ノウハウやクエスト機能をスタッフ全員で共有したところ、チームの意識が大きく変わりました。お客様への声掛けが増え、お店全体の活気がアップ。『また来るね』と言われる回数が劇的に増えました！」</p>
+                </div>
+            </div>
+
+            <!-- 5. カフェ＆ダイニング店長様 -->
+            <div class="voice-card fade-up delay-500">
+                <div class="voice-icon">
+                    <img src="owner3.jpg.jpg" alt="カフェ＆ダイニング店長様">
+                </div>
+                <div>
+                    <h4>カフェ＆ダイニング店長様</h4>
+                    <p>「ウチのような明るい店に合うか不安でしたが、<strong>『カフェタイムの女性客にこそ刺さる』</strong>という逆転の発想に驚き。今ではダーツ女子会が開かれるようになり、新しい客層が開拓できました！」</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- 5. FAQ -->
+    <section class="section-padding">
+        <div class="container fade-up">
+            <h2 class="section-title">よくある質問</h2>
+            <div class="faq-item">
+                <span class="faq-q">店が狭いのですが、置けますか？</span>
+                <p class="faq-a">省スペースのマシンもございます。まずは図面や写真で無料診断いたします。</p>
+            </div>
+            <div class="faq-item">
+                <span class="faq-q">ルールも知らないスタッフばかりですが…？</span>
+                <p class="faq-a">大丈夫です！初心者向けの遊び方や、接客での勧め方もレクチャーします。アプリ「繁盛の右腕」にもルール解説が含まれています。</p>
+            </div>
+            <div class="faq-item">
+                <span class="faq-q">集客のアドバイスにお金はかかりますか？</span>
+                <p class="faq-a">レンタル契約のお客様には、基本サポートおよびアプリの利用は無料で行っています。一緒に繁盛店を作りましょう。</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. クロージング -->
+    <section class="cta-section" id="contact">
+        <div class="container fade-up">
+            <h2>あなたの店の「作戦会議」をしませんか？</h2>
+            <p style="margin-top: 20px;">
+                まずは、あなたのお店の現状や、これからの開業プランを聞かせてください。<br>
+                「ダーツ×集客ノウハウ」で、どれくらい売上に貢献できるか、正直にお話しします。
+            </p>
+            <div style="margin-top: 50px;">
+                <a href="https://mjs-co.net/contact" class="btn btn-large btn-pulse" style="background-color: var(--point-color); color: var(--base-color); border-color:var(--point-color);">
+                    まずは無料で相談・シミュレーション依頼
+                </a>
+                <span class="micro-copy" style="color: #ccc; margin-top:15px;">（公式サイトのお問い合わせフォームへ移動します）</span>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            &copy; MJS Co., Ltd. All Rights Reserved.
+        </div>
+    </footer>
+
+    <!-- スクロールアニメーション用スクリプト -->
+    <script>
+        const observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+        document.querySelectorAll('.fade-up').forEach(element => {
+            observer.observe(element);
+        });
+    </script>
+
+</body>
+</html>
