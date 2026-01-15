@@ -7,371 +7,608 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
     
     <style>
-        /* --- ▼▼▼ カラー設定（MJS仕様） ▼▼▼ --- */
+        /* --- ▼▼▼ Premium Design Settings ▼▼▼ --- */
         :root {
-            --base-color: #011200; /* ベース：リッチブラック */
-            --main-color: #B31200; /* メイン：深紅 */
-            --point-color: #DCBC59; /* ポイント：ゴールド */
-            --text-color: #333333;
-            --light-bg: #f8f9fa;
+            /* コアカラー：より深みと高級感のある色味に調整 */
+            --base-color: #050505; /* ほぼ黒に近いリッチブラック */
+            --base-gradient: linear-gradient(135deg, #0f1510 0%, #000000 100%);
+            
+            --main-color: #9A0000; /* 深紅 */
+            --main-gradient: linear-gradient(135deg, #d31e1e 0%, #9a0000 100%);
+            
+            /* ゴールド：単色ではなくグラデーションで金属感を表現 */
+            --point-color: #C5A059;
+            --gold-gradient: linear-gradient(135deg, #E6C874 0%, #C5A059 50%, #9E7C35 100%);
+            
+            --text-color: #2D2D2D;
+            --text-muted: #666666;
+            --bg-body: #FAFAFA; /* 完全な白ではなく目に優しいオフホワイト */
+            --bg-surface: #FFFFFF;
+            
+            /* シャドウ：アプリライクな浮遊感 */
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
+            --shadow-md: 0 8px 24px rgba(0,0,0,0.06);
+            --shadow-lg: 0 16px 40px rgba(0,0,0,0.08);
+            --shadow-gold: 0 8px 25px rgba(197, 160, 89, 0.25);
+            
+            /* トランジション */
+            --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
         }
 
-        /* --- 基本設定 --- */
+        /* --- Reset & Base --- */
+        *, *::before, *::after { box-sizing: border-box; }
+
         body {
             font-family: 'Noto Sans JP', sans-serif;
             color: var(--text-color);
-            line-height: 1.8;
+            line-height: 1.9;
             margin: 0;
             padding: 0;
-            background-color: #fff;
-            overflow-x: hidden; /* 横スクロール防止 */
+            background-color: var(--bg-body);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased; /* 文字を滑らかに */
         }
 
-        h1, h2, h3 { margin: 0; font-weight: 700; letter-spacing: 0.05em; }
-        p { margin-bottom: 1.5em; }
-        .container { width: 90%; max-width: 1000px; margin: 0 auto; padding: 20px 0; }
+        h1, h2, h3, h4 { margin: 0; font-weight: 700; letter-spacing: 0.08em; line-height: 1.4; }
+        p { margin-bottom: 1.5em; letter-spacing: 0.02em; }
+        
+        /* コンテナ：アプリのように画面幅いっぱいのカード型レイアウトも意識 */
+        .container { 
+            width: 90%; 
+            max-width: 1080px; 
+            margin: 0 auto; 
+            padding: 0;
+            position: relative;
+        }
         .text-center { text-align: center; }
-        img { max-width: 100%; height: auto; }
+        img { max-width: 100%; height: auto; display: block; }
 
-        /* --- アニメーション用クラス（スクロールで発火） --- */
+        /* --- Animations (Fade Up) --- */
         .fade-up {
             opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1); /* 高級感のある動き */
+            transform: translateY(40px) scale(0.98);
+            transition: opacity 1s var(--ease-out-expo), transform 1s var(--ease-out-expo);
+            will-change: opacity, transform;
         }
         .fade-up.visible {
             opacity: 1;
-            transform: translateY(0);
+            transform: translateY(0) scale(1);
         }
-        /* 遅延表示用 */
         .delay-100 { transition-delay: 0.1s; }
         .delay-200 { transition-delay: 0.2s; }
         .delay-300 { transition-delay: 0.3s; }
         .delay-400 { transition-delay: 0.4s; }
         .delay-500 { transition-delay: 0.5s; }
 
-
-        /* --- ボタン（パルスアニメーション付き） --- */
-        @keyframes pulse-gold {
-            0% { box-shadow: 0 0 0 0 rgba(220, 188, 89, 0.7); }
-            70% { box-shadow: 0 0 0 15px rgba(220, 188, 89, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(220, 188, 89, 0); }
+        /* --- Buttons (Super Premium) --- */
+        @keyframes shine {
+            0% { left: -100%; opacity: 0; }
+            50% { opacity: 0.5; }
+            100% { left: 100%; opacity: 0; }
+        }
+        
+        /* 脈動アニメーション（より上品に） */
+        @keyframes pulse-subtle {
+            0% { box-shadow: 0 0 0 0 rgba(197, 160, 89, 0.6); }
+            70% { box-shadow: 0 0 0 10px rgba(197, 160, 89, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(197, 160, 89, 0); }
         }
 
         .btn {
-            display: inline-block;
-            background-color: var(--main-color);
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            background: var(--main-gradient);
             color: #fff;
-            padding: 20px 40px;
+            padding: 24px 48px;
             font-size: 1.1rem;
-            font-weight: 900;
-            border-radius: 4px;
+            font-weight: 700;
+            border-radius: 50px; /* アプリライクな丸み */
             text-decoration: none;
-            box-shadow: 0 4px 10px rgba(179, 18, 0, 0.3);
-            transition: all 0.3s ease;
-            text-align: center;
-            border: 1px solid var(--main-color);
+            box-shadow: 0 10px 20px rgba(154, 0, 0, 0.3);
+            transition: all 0.4s var(--ease-out-expo);
             position: relative;
             overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+            z-index: 1;
+            width: fit-content;
+            margin: 0 auto;
         }
-        /* ボタンがキラッと光る */
+
+        /* ボタンの光沢エフェクト */
         .btn::after {
             content: '';
             position: absolute;
             top: 0;
             left: -100%;
-            width: 100%;
+            width: 50%;
             height: 100%;
-            background: linear-gradient(to right, transparent, rgba(255,255,255,0.3), transparent);
-            transform: skewX(-20deg);
-            transition: 0.5s;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.4), transparent);
+            transform: skewX(-25deg);
+            z-index: -1;
+            animation: shine 3s infinite; /* 常に光が走る */
         }
-        .btn:hover::after { left: 100%; }
-        
+
         .btn:hover {
-            background-color: #fff;
-            color: var(--main-color);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-            opacity: 1; 
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 20px 30px rgba(154, 0, 0, 0.4);
         }
+
         .btn-pulse {
-            animation: pulse-gold 2s infinite; /* 常に脈動 */
+            animation: pulse-subtle 3s infinite;
+        }
+
+        .btn-large { 
+            width: 100%; 
+            max-width: 600px;
         }
         
-        .btn-large { width: 100%; max-width: 560px; font-size: 1.2rem; }
-        .micro-copy { display: block; font-size: 0.8rem; margin-top: 8px; font-weight: normal; opacity: 0.9; }
+        .micro-copy {
+            font-size: 0.75rem;
+            margin-top: 5px;
+            font-weight: 500;
+            opacity: 0.8;
+            letter-spacing: 0.05em;
+        }
 
 
-        /* --- 1. ヒーローエリア --- */
+        /* --- 1. Hero Area (The Face) --- */
         .hero {
-            /* グラデーションのみ */
-            background: linear-gradient(135deg, var(--base-color) 0%, #0a1a0a 100%);
-            color: #fff;
-            height: 80vh; /* 画面の80%の高さ */
-            min-height: 600px;
+            background: var(--base-gradient);
+            position: relative;
+            height: 90vh; /* 少し高さを増やす */
+            min-height: 650px;
             display: flex;
             align-items: center;
             justify-content: center;
-            position: relative;
+            overflow: hidden;
+            color: #fff;
         }
         
-        /* ロゴのスタイル */
+        /* 背景装飾：高級感のある幾何学模様をCSSで描画 */
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(197, 160, 89, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(154, 0, 0, 0.08) 0%, transparent 50%);
+            z-index: 0;
+        }
+
         .hero-logo {
             position: absolute;
-            top: 30px;
-            left: 30px;
-            /* サイズを小さく修正: 120pxにしました */
-            width: 120px; 
+            top: 40px;
+            left: 5%;
+            width: 100px;
             height: auto;
             z-index: 10;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));
+            border-radius: 4px; /* ロゴに少し丸み */
         }
 
         .hero-content {
-            text-align: center; /* 中央寄せ */
-            max-width: 800px;
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 860px;
             padding: 0 20px;
-            margin-top: 40px;
-        }
-
-        /* アニメーション：ふわっと出現 */
-        .hero-anim {
-            opacity: 0;
-            transform: translateY(20px);
-            animation: heroFadeIn 1s ease-out forwards;
-        }
-        @keyframes heroFadeIn {
-            to { opacity: 1; transform: translateY(0); }
         }
 
         .hero-tag {
-            background-color: var(--point-color);
-            color: var(--base-color);
-            padding: 4px 15px;
+            background: rgba(255,255,255,0.1); /* グラスモーフィズム風 */
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: var(--point-color);
+            padding: 8px 24px;
             border-radius: 50px;
-            font-weight: 900;
-            margin-bottom: 25px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 0.15em;
             display: inline-block;
-            font-size: 0.85rem;
-            letter-spacing: 0.1em;
-            animation-delay: 0.2s; /* 少し遅れて出る */
+            margin-bottom: 30px;
+            text-transform: uppercase;
         }
 
         .hero h1 {
-            font-size: 2.5rem;
-            margin-bottom: 30px;
-            line-height: 1.4;
-            text-shadow: 2px 2px 10px rgba(0,0,0,0.8);
-            animation-delay: 0.4s;
+            font-size: 3.5rem; /* PCではかなり大きく */
+            margin-bottom: 24px;
+            line-height: 1.3;
+            background: linear-gradient(to right, #fff, #ddd); /* 文字グラデーション */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.5); /* 浮き出る影 */
+        }
+        
+        /* ゴールドの強調 */
+        .hero h1 strong {
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .hero p {
-            font-size: 1.1rem;
-            margin-bottom: 40px;
-            opacity: 0.9;
-            animation-delay: 0.6s;
+            font-size: 1.2rem;
+            margin-bottom: 50px;
+            color: rgba(255,255,255,0.85);
+            font-weight: 400;
         }
 
-        .hero-btn-area {
-            animation-delay: 0.8s;
-        }
-
-        /* --- セクション共通 --- */
-        .section-padding { padding: 90px 0; }
-        .bg-light { background-color: var(--light-bg); }
+        /* --- Sections Common --- */
+        .section-padding { padding: 120px 0; }
+        .bg-light { background-color: #F3F4F6; } /* 少しグレーを入れて白とのコントラストを */
         
         .section-title {
-            font-size: 2rem;
+            font-size: 2.4rem;
             text-align: center;
-            margin-bottom: 60px;
+            margin-bottom: 80px;
             color: var(--base-color);
             position: relative;
+            display: inline-block;
+            width: 100%;
         }
+        /* タイトルの装飾：ゴールドのあしらい */
+        .section-title::before {
+            content: "PROBLEM & SOLUTION"; /* 英語を添えてオシャレに（CSS Contentで制御） */
+            display: block;
+            font-size: 0.8rem;
+            color: var(--point-color);
+            letter-spacing: 0.2em;
+            margin-bottom: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        /* セクションごとに英語タイトルを変えるための裏技 */
+        section:nth-of-type(2) .section-title::before { content: "WORRIES"; }
+        section:nth-of-type(3) .section-title::before { content: "OUR STRATEGY"; }
+        section:nth-of-type(4) .section-title::before { content: "USER VOICE"; }
+        section:nth-of-type(5) .section-title::before { content: "Q & A"; }
+        
         .section-title::after {
             content: "";
             display: block;
-            width: 80px;
-            height: 4px;
-            background-color: var(--point-color);
-            margin: 20px auto 0;
-            transition: width 0.3s;
+            width: 60px;
+            height: 3px;
+            background: var(--gold-gradient);
+            margin: 25px auto 0;
         }
-        /* ホバーで線が伸びる遊び心 */
-        .section-title:hover::after { width: 120px; }
 
-        /* --- 悩みリスト --- */
+        /* --- 2. お悩み共感 (Check Box) --- */
         .check-box {
-            background: #fff;
-            border: 2px solid var(--point-color);
-            padding: 40px;
-            border-radius: 8px;
-            max-width: 720px;
+            background: var(--bg-surface);
+            border: none; /* ボーダー廃止 */
+            padding: 60px;
+            border-radius: 24px; /* 大きな角丸 */
+            max-width: 800px;
             margin: 0 auto;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-            transition: transform 0.3s;
+            box-shadow: var(--shadow-lg); /* リッチな影 */
+            position: relative;
+            overflow: hidden;
         }
-        .check-box:hover { transform: translateY(-5px); }
+        /* 金色のアクセントライン */
+        .check-box::top {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 6px;
+            background: var(--gold-gradient);
+        }
 
         .check-item {
-            font-size: 1.1rem;
-            margin-bottom: 18px;
-            display: flex;
-            align-items: start;
-        }
-        .check-icon {
-            color: var(--main-color);
-            font-size: 1.4rem;
-            margin-right: 15px;
-            font-weight: bold;
-        }
-
-        /* --- 解決策（カード） --- */
-        .solution-bg { background-color: var(--base-color); color: #fff; }
-        .solution-bg .section-title { color: #fff; }
-        .card-container { display: flex; gap: 30px; flex-wrap: wrap; margin-top: 20px; }
-        
-        .card {
-            background: #fff;
-            color: var(--text-color);
-            flex: 1;
-            min-width: 300px;
-            padding: 50px 30px;
-            border-radius: 8px;
-            position: relative;
-            border-bottom: 5px solid var(--point-color);
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
-        }
-        /* ホバーアクション：カードが浮く */
-        .card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 30px rgba(220, 188, 89, 0.2); /* ゴールドの影 */
-        }
-
-        .card-label {
-            position: absolute;
-            top: -18px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--main-color);
-            color: #fff;
-            padding: 8px 25px;
-            border-radius: 50px;
-            font-weight: 900;
-            font-size: 0.9rem;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-            white-space: nowrap;
-        }
-        .card h3 {
-            text-align: center;
-            font-size: 1.4rem;
-            margin-bottom: 25px;
-            margin-top: 15px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 15px;
-            line-height: 1.4;
-            /* 【修正点】高さを揃えるための設定 */
-            min-height: 5em; /* 左右の見出しエリアの高さを合わせる */
+            font-size: 1.15rem;
+            margin-bottom: 24px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            flex-direction: column;
+            padding: 15px 20px;
+            border-radius: 12px;
+            transition: background 0.3s;
         }
-        .card ul { padding-left: 20px; }
-        .card li { margin-bottom: 12px; font-weight: 500; }
+        .check-item:hover {
+            background: #fcfcfc; /* ホバーで微妙に色づく */
+        }
         
-        /* リンクボタン風スタイル */
+        .check-icon {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 32px;
+            height: 32px;
+            background: var(--main-color);
+            color: #fff;
+            border-radius: 50%;
+            font-size: 1rem;
+            margin-right: 20px;
+            flex-shrink: 0;
+            box-shadow: 0 4px 10px rgba(154,0,0,0.3);
+        }
+
+
+        /* --- 3. 解決策 (Solutions) --- */
+        .solution-bg { 
+            background: #111; /* 完全な黒ではなくダークグレー */
+            color: #fff; 
+            position: relative;
+            z-index: 1;
+        }
+        /* 背景に薄っすらとダーツボードのような円形あしらい */
+        .solution-bg::before {
+            content: '';
+            position: absolute;
+            top: -100px; right: -100px;
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%);
+            border-radius: 50%;
+            z-index: -1;
+        }
+        
+        .solution-bg .section-title { color: #fff; }
+
+        .card-container { 
+            display: flex; 
+            gap: 40px; 
+            margin-top: 40px; 
+        }
+        
+        .card {
+            background: rgba(255,255,255,0.05); /* ダークモード風カード */
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #eee;
+            flex: 1;
+            padding: 60px 40px;
+            border-radius: 20px;
+            position: relative;
+            transition: all 0.4s var(--ease-out-expo);
+            border-bottom: none; /* 元のCSS打ち消し */
+        }
+
+        .card:hover {
+            transform: translateY(-15px);
+            background: rgba(255,255,255,0.08);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            border-color: rgba(197, 160, 89, 0.5); /* ホバーでゴールドの枠 */
+        }
+
+        /* 修正：ラベルの文字サイズを大きくし、太字に */
+        .card-label {
+            background: var(--gold-gradient);
+            color: #000; /* ゴールド上の文字は黒が見やすい */
+            padding: 8px 30px; /* パディング調整 */
+            top: 30px;
+            left: 30px;
+            transform: none; /* 中央寄せ解除、左上に配置して洗練 */
+            border-radius: 50px;
+            font-size: 1.3rem; /* 0.8remから大きく変更 */
+            font-weight: 900; /* 太字で強調 */
+            letter-spacing: 0.1em;
+            box-shadow: 0 4px 15px rgba(197, 160, 89, 0.4);
+        }
+        
+        .card h3 {
+            font-size: 1.8rem;
+            margin: 60px 0 30px; /* ラベルとの距離 */
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 20px;
+            min-height: auto; /* 高さ固定解除 */
+            display: block;
+        }
+        
+        .card ul { padding-left: 0; list-style: none; }
+        .card li { 
+            margin-bottom: 20px; 
+            position: relative; 
+            padding-left: 20px;
+            opacity: 0.9;
+        }
+        .card li::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 10px;
+            width: 6px; height: 6px;
+            background: var(--point-color);
+            border-radius: 50%;
+        }
+        
         .text-link-arrow {
-            display: inline-block;
-            margin-top: 15px;
-            font-weight: bold;
-            text-decoration: none;
-            border-bottom: 1px solid var(--main-color);
+            color: var(--point-color);
+            border-bottom: 1px solid var(--point-color);
+            transition: 0.3s;
+            padding-bottom: 2px;
+        }
+        .text-link-arrow:hover {
+            color: #fff;
+            border-color: #fff;
         }
         
         .bonus-box {
-            background: #FFFBE6;
-            border: 2px dashed var(--point-color);
-            padding: 15px;
-            margin-top: 20px;
-            border-radius: 6px;
-            text-align: center;
-            font-weight: bold;
-            color: #5d4d00;
+            background: linear-gradient(135deg, rgba(197, 160, 89, 0.1), rgba(197, 160, 89, 0.05));
+            border: 1px solid rgba(197, 160, 89, 0.3);
+            color: var(--point-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 30px;
         }
 
-        /* --- 実績・声 --- */
+        /* --- 4. User Voice (Cards) --- */
         .voice-card {
-            background: #fff;
-            padding: 35px;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            margin-bottom: 25px;
+            background: var(--bg-surface);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid #f0f0f0;
             display: flex;
             align-items: flex-start;
-            gap: 25px;
-            transition: transform 0.3s;
+            gap: 30px;
+            transition: all 0.3s var(--ease-out-expo);
+            margin-bottom: 30px;
         }
-        .voice-card:hover { transform: scale(1.02); } /* 微妙に拡大 */
+        .voice-card:hover { 
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+            border-color: rgba(197, 160, 89, 0.3);
+        }
 
         .voice-icon {
-            width: 80px;
-            height: 80px;
-            background: #eee;
+            width: 90px;
+            height: 90px;
             border-radius: 50%;
+            border: 3px solid #fff; /* 白枠で写真を囲む */
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1); /* 写真に影 */
             flex-shrink: 0;
-            overflow: hidden;
-            border: 2px solid var(--point-color); /* ゴールドの枠線を追加 */
-        }
-        .voice-icon img { width: 100%; height: 100%; object-fit: cover; }
-
-        /* --- FAQ --- */
-        .faq-item {
-            border-bottom: 1px solid #ddd;
-            padding: 25px 0;
-        }
-        .faq-q {
-            font-weight: bold;
-            color: var(--base-color);
-            display: block;
-            margin-bottom: 12px;
-            font-size: 1.1rem;
-            cursor: pointer;
-        }
-        .faq-q::before { content: "Q."; color: var(--main-color); margin-right: 10px; font-size: 1.3rem; }
-        .faq-a { padding-left: 35px; }
-
-        /* --- クロージング --- */
-        .cta-section {
-            background: var(--base-color);
-            color: #fff;
-            text-align: center;
-            padding: 100px 0;
-            border-top: 5px solid var(--point-color);
         }
         
-        /* フッター */
-        footer {
-            background: #000;
-            color: #888;
-            padding: 30px;
-            text-align: center;
+        .voice-card h4 {
+            font-size: 1.2rem;
+            color: var(--main-color);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+        .voice-card h4::after {
+            content: '★★★★★';
             font-size: 0.8rem;
-            border-top: 1px solid #333;
+            color: var(--point-color);
+            margin-left: 10px;
+            letter-spacing: 2px;
+        }
+        
+        .voice-card p {
+            font-size: 0.95rem;
+            line-height: 1.8;
+            color: var(--text-muted);
+            margin-bottom: 0;
         }
 
-        /* --- スマホ対応 --- */
+
+        /* --- 5. FAQ --- */
+        .faq-item {
+            background: #fff;
+            border: 1px solid #eee;
+            border-bottom: 1px solid #eee; /* リセット */
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+            transition: 0.3s;
+        }
+        .faq-item:hover {
+            box-shadow: var(--shadow-sm);
+            border-color: #ddd;
+        }
+        
+        .faq-q {
+            font-size: 1.2rem;
+            color: var(--base-color);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        .faq-q::before { 
+            content: "Q"; 
+            color: #fff;
+            background: var(--base-color);
+            width: 30px; height: 30px;
+            border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 0.9rem;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        
+        .faq-a {
+            padding-left: 45px;
+            color: var(--text-muted);
+            border-left: 2px solid #eee; /* 左線でQとAを視覚的に繋ぐ */
+            margin-left: 14px; /* アイコンの中心に合わせる */
+        }
+
+
+        /* --- 6. CTA / Footer --- */
+        .cta-section {
+            background: var(--base-gradient);
+            color: #fff;
+            padding: 140px 0;
+            border-top: none;
+            position: relative;
+            overflow: hidden;
+        }
+        /* CTA背景にリッチな光の効果 */
+        .cta-section::after {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(154,0,0,0.15) 0%, transparent 60%);
+            animation: pulse-bg 10s infinite alternate;
+        }
+        @keyframes pulse-bg { 0% { transform: scale(1); } 100% { transform: scale(1.1); } }
+
+        .cta-section h2 {
+            font-size: 2.8rem;
+            margin-bottom: 30px;
+            background: linear-gradient(to right, #fff, #ccc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            z-index: 2;
+        }
+        .cta-section p { position: relative; z-index: 2; opacity: 0.9; font-size: 1.1rem; }
+        .cta-section div { position: relative; z-index: 2; }
+        
+        /* CTAボタンの特別色（ゴールドメイン） */
+        .cta-section .btn {
+            background: var(--gold-gradient);
+            color: #000;
+            box-shadow: var(--shadow-gold);
+            border: none;
+        }
+        .cta-section .btn:hover {
+            box-shadow: 0 15px 40px rgba(197, 160, 89, 0.4);
+        }
+
+        footer {
+            background: #000;
+            color: #555;
+            padding: 40px;
+            font-size: 0.75rem;
+            border-top: 1px solid #111;
+            letter-spacing: 0.05em;
+        }
+
+        /* --- Mobile Responsive --- */
         @media (max-width: 768px) {
-            .hero-logo { width: 110px; top: 20px; left: 20px; }
-            .hero h1 { font-size: 1.8rem; }
-            .btn { width: 100%; padding: 18px 0; }
-            .card-container { flex-direction: column; }
-            .voice-card { flex-direction: column; text-align: center; }
-            .voice-icon { margin: 0 auto; }
-            .faq-a { padding-left: 0; }
-            .card h3 { min-height: auto; padding-top: 10px; padding-bottom: 10px; } /* スマホでは高さを自動に戻す */
+            body { font-size: 15px; }
+            .section-padding { padding: 80px 0; }
+            
+            .hero { height: auto; padding: 120px 0 80px; text-align: left; }
+            .hero-content { text-align: left; padding: 0 20px; }
+            .hero h1 { font-size: 2.2rem; margin-bottom: 20px; }
+            .hero-logo { width: 80px; top: 20px; left: 20px; }
+            .hero-tag { font-size: 0.75rem; padding: 6px 16px; }
+            
+            .section-title { font-size: 1.8rem; text-align: left; margin-bottom: 50px; }
+            .section-title::after { margin: 20px 0 0; }
+            
+            .check-box { padding: 30px 20px; }
+            .check-item { font-size: 1rem; align-items: flex-start; }
+            
+            .card-container { flex-direction: column; gap: 20px; }
+            .card { padding: 40px 25px; }
+            .card h3 { font-size: 1.5rem; margin: 50px 0 20px; }
+            
+            .voice-card { flex-direction: column; text-align: left; padding: 30px; gap: 20px; }
+            .voice-icon { width: 70px; height: 70px; margin: 0; }
+            
+            .faq-q { font-size: 1.1rem; }
+            .faq-a { padding-left: 0; margin-left: 0; border-left: none; margin-top: 10px; }
+            
+            .btn { width: 100%; padding: 20px; font-size: 1rem; }
+            
+            .cta-section h2 { font-size: 1.8rem; }
         }
     </style>
 </head>
@@ -385,16 +622,15 @@
         <div class="container hero-content">
             <span class="hero-tag hero-anim">飲食店オーナー・開業予定者様へ</span>
             
-            <!-- 修正：キャッチコピー変更 -->
-            <h1 class="hero-anim">お貸しするのは、<br>マシンではなく『繁盛のノウハウ』</h1>
+            <h1 class="hero-anim">お貸しするのは、<br>マシンではなく<br><strong>『繁盛のノウハウ』</strong></h1>
             
             <p class="hero-anim">
-                <!-- 修正：実績数を変更 -->
                 導入実績・3,000台の実績を持つMJS。<br>
                 マシン×集客アドバイスの「二刀流」で繁盛店へ。
             </p>
             <div class="hero-btn-area hero-anim">
-                <a href="https://mjs-co.net/contact" class="btn btn-large btn-pulse">
+                <!-- 修正：target="_blank"を追加 -->
+                <a href="https://mjs-co.net/contact" target="_blank" rel="noopener noreferrer" class="btn btn-large btn-pulse">
                     「集客相談」付き<br>無料シミュレーションを申し込む
                     <span class="micro-copy">※無理な売り込みは一切ありません</span>
                 </a>
@@ -407,14 +643,14 @@
         <div class="container fade-up">
             <h2 class="section-title">美味しい料理があれば<br>お客様は来ますか？</h2>
             <div class="check-box fade-up delay-100">
-                <p class="text-center" style="margin-bottom: 30px; font-weight:bold; font-size:1.1rem;">こんな「壁」にぶつかっていませんか？</p>
+                <p class="text-center" style="margin-bottom: 30px; font-weight:700; font-size:1.2rem; color:var(--main-color);">こんな「壁」にぶつかっていませんか？</p>
                 <div class="check-item"><span class="check-icon">✔</span> 「2軒目利用」が弱く、早い時間に客足が途絶える</div>
                 <div class="check-item"><span class="check-icon">✔</span> 新規客は来るが、なかなか常連にならない</div>
                 <div class="check-item"><span class="check-icon">✔</span> スタッフとお客様の会話が弾まない</div>
                 <div class="check-item"><span class="check-icon">✔</span> 開業予定だが、集客できるか不安でたまらない</div>
             </div>
-            <p class="text-center fade-up delay-200" style="margin-top: 40px; font-size: 1.2rem;">
-                その悩み、<strong style="color: var(--main-color); border-bottom: 2px solid var(--point-color);">「集客ノウハウ」を持つMJS</strong>にお任せください。
+            <p class="text-center fade-up delay-200" style="margin-top: 50px; font-size: 1.3rem; font-weight: 500;">
+                その悩み、<strong style="background:linear-gradient(transparent 70%, var(--point-color) 70%);">「集客ノウハウ」を持つMJS</strong>にお任せください。
             </p>
         </div>
     </section>
@@ -426,29 +662,31 @@
             <div class="card-container">
                 <!-- 左：狩り -->
                 <div class="card fade-up delay-100">
-                    <span class="card-label">狩りの戦略（即効性）</span>
-                    <h3>リスクゼロで、即・収益化</h3>
+                    <!-- 修正：文言変更 -->
+                    <span class="card-label">即効性</span>
+                    <h3>リスクゼロで、<br>即・収益化</h3>
                     <ul>
-                        <li><strong>初期費用0円・設置無料</strong><br>月々のレンタル料だけでスタート。</li>
-                        <li><strong>デッドスペースの収益化</strong><br>空きスペースが利益を生む席に変わります。</li>
-                        <li><strong>最短3日で設置可能</strong><br>面倒な設定はすべてプロにお任せ。</li>
+                        <li><strong>初期費用0円・設置無料</strong><br><span style="font-size:0.9em; color:#bbb;">月々のレンタル料だけでスタート。</span></li>
+                        <li><strong>デッドスペースの収益化</strong><br><span style="font-size:0.9em; color:#bbb;">空きスペースが利益を生む席に変わります。</span></li>
+                        <li><strong>最短3日で設置可能</strong><br><span style="font-size:0.9em; color:#bbb;">面倒な設定はすべてプロにお任せ。</span></li>
                     </ul>
-                    <div class="text-center">
-                        <a href="https://mjs-co.net/darts" target="_blank" class="text-link-arrow">取り扱いマシンを見る &gt;</a>
+                    <div class="text-center" style="margin-top:auto;">
+                        <a href="https://mjs-co.net/darts" target="_blank" rel="noopener noreferrer" class="text-link-arrow">取り扱いマシンを見る &gt;</a>
                     </div>
                 </div>
                 
                 <!-- 右：農耕（修正版：アプリ紹介） -->
                 <div class="card fade-up delay-200">
-                    <span class="card-label">農耕の戦略（継続性）</span>
+                    <!-- 修正：文言変更 -->
+                    <span class="card-label">継続性</span>
                     <h3>
-                        <span style="font-size:0.8em; color:var(--main-color);">★導入特典</span><br>
+                        <span style="font-size:0.5em; color:var(--point-color); display:block; margin-bottom:5px;">★導入特典</span>
                         25年のノウハウが詰まった<br>「繁盛の右腕」
                     </h3>
                     <ul>
-                        <li><strong>SNS運用が変わる</strong><br>「今日、何投稿しよう？」をゼロに。AI作成の刺さる文章で、見込み客を自動集客。</li>
-                        <li><strong>スタッフが勝手に育つ</strong><br>「接客クエスト」や「魔法の言葉」で、教えなくてもスタッフが接客の楽しさに目覚めます。</li>
-                        <li><strong>繁盛ノウハウをポケットに</strong><br>迷った時の「経営ヒント30選」や「口コミ獲得QR」など、現場で使える武器を完全収録。</li>
+                        <li><strong>SNS運用が変わる</strong><br><span style="font-size:0.9em; color:#bbb;">AI作成の刺さる文章で、見込み客を自動集客。</span></li>
+                        <li><strong>スタッフが勝手に育つ</strong><br><span style="font-size:0.9em; color:#bbb;">「接客クエスト」でスタッフが接客の楽しさに目覚めます。</span></li>
+                        <li><strong>繁盛ノウハウをポケットに</strong><br><span style="font-size:0.9em; color:#bbb;">「経営ヒント30選」や「口コミ獲得QR」を完全収録。</span></li>
                     </ul>
                     <div class="bonus-box">
                         スマホ1台で、お店に<br>
@@ -467,7 +705,7 @@
             <!-- 1. 居酒屋オーナー様 -->
             <div class="voice-card fade-up delay-100">
                 <div class="voice-icon">
-                    <img src="owner1.jpg.jpg" alt="居酒屋オーナー様">
+                    <img src="owner1.jpg.jpg" alt="居酒屋オーナー様" onerror="this.src='https://placehold.co/150x150/eee/999?text=Owner'">
                 </div>
                 <div>
                     <h4>居酒屋オーナー様</h4>
@@ -478,7 +716,7 @@
             <!-- 2. バー開業予定だったA様 -->
             <div class="voice-card fade-up delay-200">
                 <div class="voice-icon">
-                    <img src="owner2.jpg.jpg" alt="バー開業予定だったA様">
+                    <img src="owner2.jpg.jpg" alt="バー開業予定だったA様" onerror="this.src='https://placehold.co/150x150/eee/999?text=Owner'">
                 </div>
                 <div>
                     <h4>バー開業予定だったA様</h4>
@@ -489,7 +727,7 @@
             <!-- 3. ダイニングバー店長様 -->
             <div class="voice-card fade-up delay-300">
                 <div class="voice-icon">
-                    <img src="owner4.jpg" alt="ダイニングバー店長様">
+                    <img src="owner4.jpg" alt="ダイニングバー店長様" onerror="this.src='https://placehold.co/150x150/eee/999?text=Owner'">
                 </div>
                 <div>
                     <h4>ダイニングバー店長様</h4>
@@ -500,7 +738,7 @@
             <!-- 4. アミューズメントバー マネージャー様 -->
             <div class="voice-card fade-up delay-400">
                 <div class="voice-icon">
-                    <img src="owner5.jpg" alt="アミューズメントバー マネージャー様">
+                    <img src="owner5.jpg" alt="アミューズメントバー マネージャー様" onerror="this.src='https://placehold.co/150x150/eee/999?text=Owner'">
                 </div>
                 <div>
                     <h4>アミューズメントバー マネージャー様</h4>
@@ -511,7 +749,7 @@
             <!-- 5. カフェ＆ダイニング店長様 -->
             <div class="voice-card fade-up delay-500">
                 <div class="voice-icon">
-                    <img src="owner3.jpg.jpg" alt="カフェ＆ダイニング店長様">
+                    <img src="owner3.jpg.jpg" alt="カフェ＆ダイニング店長様" onerror="this.src='https://placehold.co/150x150/eee/999?text=Owner'">
                 </div>
                 <div>
                     <h4>カフェ＆ダイニング店長様</h4>
@@ -549,18 +787,20 @@
                 まずは、あなたのお店の現状や、これからの開業プランを聞かせてください。<br>
                 「ダーツ×集客ノウハウ」で、どれくらい売上に貢献できるか、正直にお話しします。
             </p>
-            <div style="margin-top: 50px;">
-                <a href="https://mjs-co.net/contact" class="btn btn-large btn-pulse" style="background-color: var(--point-color); color: var(--base-color); border-color:var(--point-color);">
+            <div style="margin-top: 60px;">
+                <!-- 修正：target="_blank"を追加 -->
+                <a href="https://mjs-co.net/contact" target="_blank" rel="noopener noreferrer" class="btn btn-large btn-pulse">
                     まずは無料で相談・シミュレーション依頼
                 </a>
-                <span class="micro-copy" style="color: #ccc; margin-top:15px;">（公式サイトのお問い合わせフォームへ移動します）</span>
+                <span class="micro-copy" style="color: rgba(255,255,255,0.7); margin-top:20px; display:block;">（公式サイトのお問い合わせフォームへ移動します）</span>
             </div>
         </div>
     </section>
 
     <footer>
         <div class="container">
-            &copy; MJS Co., Ltd. All Rights Reserved.
+            <!-- 修正：フッター文言変更 -->
+            テスト版（ベータ版） &copy; 2026 SPC
         </div>
     </footer>
 
@@ -575,7 +815,7 @@
                 }
             });
         }, observerOptions);
-        document.querySelectorAll('.fade-up').forEach(element => {
+        document.querySelectorAll('.fade-up, .hero-anim').forEach(element => {
             observer.observe(element);
         });
     </script>
